@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addTx;
@@ -11,7 +12,7 @@ class NewTransaction extends StatefulWidget {
 
 class _NewTransactionState extends State<NewTransaction> {
   final titleController = TextEditingController();
-
+  DateTime _selectedDate;
   final amountController = TextEditingController();
 
   @override
@@ -28,7 +29,7 @@ class _NewTransactionState extends State<NewTransaction> {
               decoration: InputDecoration(
                 labelText: 'Title',
               ),
-              onSubmitted: (_) => submitTx(),
+              onSubmitted: (_) => _submitTx(),
             ),
             TextField(
               controller: amountController,
@@ -38,13 +39,32 @@ class _NewTransactionState extends State<NewTransaction> {
               ),
               // '_' to mention we didn't use that argument
               onSubmitted: (_) =>
-                  submitTx(), //Here val mentioning is mandatory but we didn't use it
+                  _submitTx(), //Here val mentioning is mandatory but we didn't use it
+            ),
+            Container(
+              height: 75,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Text(_selectedDate == null
+                          ? 'No date selected!'
+                          : 'Selected Date: ${DateFormat.yMd().format(_selectedDate)}')),
+                  FlatButton(
+                    child: Text(
+                      'Select Date',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    textColor: Colors.deepPurple,
+                    onPressed: _DatePicker,
+                  ),
+                ],
+              ),
             ),
             RaisedButton(
-              onPressed: submitTx,
+              onPressed: _submitTx,
               child: Text('Add Transaction'),
-              textColor: Colors.deepPurple,
-              color: Colors.white70,
+              textColor: Colors.white,
+              color: Colors.deepPurple,
               elevation: 5,
             ),
           ],
@@ -53,14 +73,30 @@ class _NewTransactionState extends State<NewTransaction> {
     );
   }
 
-  void submitTx() {
+  // ignore: non_constant_identifier_names
+  void _DatePicker() {
+    showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2019),
+            lastDate: DateTime.now())
+        .then((datePicked) {
+      if (datePicked == null) return;
+      setState(() {
+        _selectedDate = datePicked;
+      });
+    });
+  }
+
+  void _submitTx() {
+    if (amountController.text.isEmpty) return;
     final enteredTitle = titleController.text;
     final enteredAmount = double.parse(amountController.text);
-    if (enteredTitle.isEmpty || enteredAmount <= 0) {
+    if (enteredTitle.isEmpty || enteredAmount <= 0 || _selectedDate == null) {
       //Simply return
       return;
     }
-    widget.addTx(enteredTitle, enteredAmount);
+    widget.addTx(enteredTitle, enteredAmount, _selectedDate);
     //Closing the modal sheet
     Navigator.of(context).pop();
   }

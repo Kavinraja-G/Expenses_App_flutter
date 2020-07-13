@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       title: 'Expenses App',
       theme: ThemeData(
         primarySwatch: Colors.purple,
-        accentColor: Colors.amber,  
+        accentColor: Colors.amber,
       ),
       home: MyHomePage(),
     );
@@ -28,28 +28,32 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _userTransaction = [];
 
-  List<Transaction> get _recentTransaction
-  {
-    return _userTransaction.where((tx){
+  List<Transaction> get _recentTransaction {
+    return _userTransaction.where((tx) {
       return tx.date.isAfter(
-        DateTime.now().subtract(
-          Duration(days: 7)
-        ),
+        DateTime.now().subtract(Duration(days: 7)),
       );
     }).toList();
   }
 
-  void _addTransaction(String title, double amount) {
+  void _addTransaction(String title, double amount, DateTime selectedDate) {
     final newTx = Transaction(
-        id: DateTime.now().toString(),
-        title: title,
-        amount: amount,
-        date: DateTime.now()
-      );
-      setState((){
-        _userTransaction.add(newTx);
-      } 
+      id: DateTime.now().toString(),
+      title: title,
+      amount: amount,
+      date: selectedDate,
     );
+    setState(() {
+      _userTransaction.add(newTx);
+    });
+  }
+
+  void _deleteTransaction(String id) {
+    setState(() {
+      _userTransaction.removeWhere((data) {
+        return data.id == id;
+      });
+    });
   }
 
   void _startAddNewTransaction(BuildContext ctx) {
@@ -58,11 +62,11 @@ class _MyHomePageState extends State<MyHomePage> {
         context: ctx,
         builder: (_) {
           return GestureDetector(
-              //This is used to prevent tap to close the float form which is by default
-              onTap: () {}, 
-              child: NewTransaction(_addTransaction),
-              behavior: HitTestBehavior.opaque,
-            );
+            //This is used to prevent tap to close the float form which is by default
+            onTap: () {},
+            child: NewTransaction(_addTransaction),
+            behavior: HitTestBehavior.opaque,
+          );
         });
   }
 
@@ -82,9 +86,8 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           //mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            
-              Chart(_recentTransaction),
-              TransactionList(_userTransaction),
+            Chart(_recentTransaction),
+            TransactionList(_userTransaction, _deleteTransaction),
           ],
         ),
       ),

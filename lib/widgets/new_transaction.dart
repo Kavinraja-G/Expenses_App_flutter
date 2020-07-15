@@ -17,57 +17,70 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: Container(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            TextField(
-              controller: titleController,
-              decoration: InputDecoration(
-                labelText: 'Title',
-              ),
-              onSubmitted: (_) => _submitTx(),
-            ),
-            TextField(
-              controller: amountController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Amount',
-              ),
-              // '_' to mention we didn't use that argument
-              onSubmitted: (_) =>
-                  _submitTx(), //Here val mentioning is mandatory but we didn't use it
-            ),
-            Container(
-              height: 75,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                      child: Text(_selectedDate == null
-                          ? 'No date selected!'
-                          : 'Selected Date: ${DateFormat.yMd().format(_selectedDate)}')),
-                  FlatButton(
-                    child: Text(
-                      'Select Date',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    textColor: Colors.deepPurple,
-                    onPressed: _DatePicker,
+    return Container(
+      color: Colors.blueGrey[300],
+      child: Card(
+        color: Colors.blueGrey[200],
+        elevation: 10,
+        child: Container(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              TextField(
+                controller: titleController,
+                cursorColor: Colors.black,
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                  labelStyle: TextStyle(
+                    color: Colors.black
                   ),
-                ],
+                ),
+                onSubmitted: (_) => _submitTx(),
               ),
-            ),
-            RaisedButton(
-              onPressed: _submitTx,
-              child: Text('Add Transaction'),
-              textColor: Colors.white,
-              color: Colors.deepPurple,
-              elevation: 5,
-            ),
-          ],
+              TextField(
+                controller: amountController,
+                cursorColor: Colors.black,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Amount',
+                  labelStyle: TextStyle(
+                    color: Colors.black
+                  ),
+                ),
+                // '_' to mention we didn't use that argument
+                onSubmitted: (_) =>
+                    _submitTx(), //Here val mentioning is mandatory but we didn't use it
+              ),
+              Container(
+                height: 75,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                        child: Text(_selectedDate == null
+                            ? 'No date selected!'
+                            : 'Selected Date: ${DateFormat.yMd().format(_selectedDate)}')),
+                    RaisedButton(
+                      child: Text(
+                        'Select Date',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      color: Colors.redAccent,
+                      textColor: Colors.white,
+                      onPressed: _DatePicker,
+                    ),
+                  ],
+                ),
+              ),
+              RaisedButton(
+                onPressed: _submitTx,
+                child: Text('Add Transaction'),
+                textColor: Colors.white,
+                color: Colors.redAccent,
+                elevation: 5,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+//import 'package:flutter/services.dart';
 import 'package:myexpenses/widgets/chart.dart';
 import 'package:myexpenses/widgets/new_transaction.dart';
 import 'package:myexpenses/widgets/transaction_list.dart';
 import 'models/transaction.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  //This can be used for locking the app in portrait mode only!
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,DeviceOrientation.portraitDown,
+  // ]);
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Expenses App',
-      theme: ThemeData(
-        primarySwatch: Colors.purple,
-        accentColor: Colors.amber,
-      ),
       home: MyHomePage(),
     );
   }
@@ -72,29 +76,48 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final appBar = AppBar(
+      title: Text('Expenses'),
+      backgroundColor: Colors.black,
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.add),
+          color: Colors.redAccent,
+          onPressed: () => _startAddNewTransaction(context),
+        )
+      ],
+    );
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Expenses'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _startAddNewTransaction(context),
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          //mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Chart(_recentTransaction),
-            TransactionList(_userTransaction, _deleteTransaction),
-          ],
+      appBar: appBar,
+      body: Container(
+        color: Colors.blueGrey[200],
+        child: SingleChildScrollView(
+          child: Column(
+            //mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                height: (MediaQuery.of(context).size.height -
+                        appBar.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.3,
+                child: Chart(_recentTransaction),
+              ),
+              Container(
+                height: (MediaQuery.of(context).size.height -
+                        appBar.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.7,
+                child: TransactionList(_userTransaction, _deleteTransaction),
+              ),
+            ],
+          ),
         ),
       ),
 
       //Add in floating action button to the body
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.redAccent,
         child: Icon(Icons.add),
         onPressed: () => _startAddNewTransaction(context),
       ),

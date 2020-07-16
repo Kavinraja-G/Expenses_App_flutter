@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter/services.dart';
+import 'package:flutter/services.dart';
 import 'package:myexpenses/widgets/chart.dart';
 import 'package:myexpenses/widgets/new_transaction.dart';
 import 'package:myexpenses/widgets/transaction_list.dart';
 import 'models/transaction.dart';
 
 void main() {
-  //This can be used for locking the app in portrait mode only!
-  // WidgetsFlutterBinding.ensureInitialized();
-  // SystemChrome.setPreferredOrientations([
-  //   DeviceOrientation.portraitUp,DeviceOrientation.portraitDown,
-  // ]);
+  // This can be used for locking the app in portrait mode only!
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(MyApp());
 }
 
@@ -52,6 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  bool _showChart = false;
+
   void _deleteTransaction(String id) {
     setState(() {
       _userTransaction.removeWhere((data) {
@@ -76,9 +79,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final islandscapeMode =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     final appBar = AppBar(
       title: Text('Expenses'),
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.blue[900],
       actions: <Widget>[
         IconButton(
           icon: Icon(Icons.add),
@@ -87,6 +92,15 @@ class _MyHomePageState extends State<MyHomePage> {
         )
       ],
     );
+
+    final txListWidget = Container(
+      height: (MediaQuery.of(context).size.height -
+              appBar.preferredSize.height -
+              MediaQuery.of(context).padding.top) *
+          0.7,
+      child: TransactionList(_userTransaction, _deleteTransaction),
+    );
+
     return Scaffold(
       appBar: appBar,
       body: Container(
@@ -95,20 +109,42 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             //mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Container(
-                height: (MediaQuery.of(context).size.height -
-                        appBar.preferredSize.height -
-                        MediaQuery.of(context).padding.top) *
-                    0.3,
-                child: Chart(_recentTransaction),
-              ),
-              Container(
-                height: (MediaQuery.of(context).size.height -
-                        appBar.preferredSize.height -
-                        MediaQuery.of(context).padding.top) *
-                    0.7,
-                child: TransactionList(_userTransaction, _deleteTransaction),
-              ),
+              if (islandscapeMode)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Show Chart',
+                    ),
+                    Switch(
+                      value: _showChart,
+                      onChanged: (value) {
+                        setState(() {
+                          _showChart = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              if (!islandscapeMode)
+                Container(
+                  height: (MediaQuery.of(context).size.height -
+                          appBar.preferredSize.height -
+                          MediaQuery.of(context).padding.top) *
+                      0.3,
+                  child: Chart(_recentTransaction),
+                ),
+              if (!islandscapeMode) txListWidget,
+              if (islandscapeMode)
+                _showChart
+                    ? Container(
+                        height: (MediaQuery.of(context).size.height -
+                                appBar.preferredSize.height -
+                                MediaQuery.of(context).padding.top) *
+                            0.7,
+                        child: Chart(_recentTransaction),
+                      )
+                    : txListWidget
             ],
           ),
         ),
